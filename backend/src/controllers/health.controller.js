@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { STATUS_CODES, APP_NAME } from "../config/constants.js";
 import { ENV } from "../config/env.js";
-import packageJson from "../../package.json" assert { type: "json" };
+import packageJson from "../../package.json" with { type: "json" };
 
 const checkHealth = asyncHandler(async (req, res) => {
   const healthData = {

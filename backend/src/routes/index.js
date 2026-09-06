@@ -1,5 +1,6 @@
 import { Router } from "express";
 import healthRoutes from "./health.routes.js";
+import authRoutes from "./auth.routes.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { STATUS_CODES } from "../config/constants.js";
 
@@ -14,5 +15,6 @@ router.get("/", (req, res) => {
 
 // Mount modular routes
 router.use("/api/health", healthRoutes);
+router.use("/api/v1/auth", authRoutes);
 
 export default router;

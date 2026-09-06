@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcryptjs";
+import { ENV } from "../config/env.js";
 
 const userSchema = new Schema(
   {
@@ -28,7 +30,7 @@ const userSchema = new Schema(
     },
     businessName: {
       type: String,
-      required: [true, "Business Name is required"],
+      required: [false, "Business Name is required"], // Optional for basic auth setup
       trim: true,
     },
     instagramAccountId: {
@@ -42,7 +44,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "owner", "member"],
+      enum: ["admin", "owner", "member", "manager", "viewer"],
       default: "owner",
     },
     subscriptionPlan: {
@@ -58,10 +60,31 @@ const userSchema = new Schema(
       type: Date,
       default: null,
     },
+    loginCount: {
+      type: Number,
+      default: 0,
+    }
   },
   {
     timestamps: true, // Automatically manages createdAt and updatedAt
   }
 );
+
+// Auto-hash password before saving
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(ENV.BCRYPT_SALT_ROUNDS);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to verify password
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 export const User = mongoose.model("User", userSchema);
