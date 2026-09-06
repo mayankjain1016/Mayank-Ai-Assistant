@@ -2,8 +2,6 @@ import { userRepository } from "../repositories/User.repository.js";
 import { authRepository } from "../repositories/Auth.repository.js";
 import { ApiError } from "../utils/ApiError.js";
 import { STATUS_CODES } from "../config/constants.js";
-import { generateAuthTokens, verifyRefreshToken } from "../utils/jwt.util.js"; // or token.util.js if unified, let's use token.util.js
-
 import { generateAuthTokens as generateTokens } from "../utils/token.util.js";
 import { verifyRefreshToken as verifyRt } from "../utils/jwt.util.js";
 
