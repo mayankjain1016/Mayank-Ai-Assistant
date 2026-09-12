@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { ENV } from "../../config/env.js";
-import { logger } from "../../config/logger.js"; // Fallback to console if logger isn't available
+import logger from "../../config/logger.js"; // Fallback to console if logger isn't available
 
 class GeminiIntegration {
   constructor() {
