@@ -13,6 +13,9 @@ import apiRoutes from "./routes/index.js";
 
 const app = express();
 
+// Trust the first proxy (Render) to correctly resolve X-Forwarded-For headers
+app.set("trust proxy", 1);
+
 // 1. Security Middlewares
 applySecurityMiddleware(app);
 
