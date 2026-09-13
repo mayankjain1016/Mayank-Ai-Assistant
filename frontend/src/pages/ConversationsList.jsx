@@ -73,7 +73,7 @@ const ConversationsList = () => {
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800/60 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[500px]">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[500px]">
         {loading ? (
           <div className="flex-1 p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -86,11 +86,11 @@ const ConversationsList = () => {
           </div>
         ) : conversations.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-500 mb-6">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-black0 mb-6">
               <Inbox size={32} />
             </div>
-            <h3 className="text-xl font-semibold text-slate-200 mb-2">No conversations yet</h3>
-            <p className="text-slate-400 max-w-sm">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No conversations yet</h3>
+            <p className="text-gray-500 max-w-sm">
               When users interact with your AI Assistant on Instagram, their conversations will appear here.
             </p>
           </div>
@@ -98,7 +98,7 @@ const ConversationsList = () => {
           <div className="flex-1 overflow-x-auto">
             <table className="w-full text-left border-collapse whitespace-nowrap">
               <thead>
-                <tr className="bg-slate-950/50 border-b border-slate-800/60 text-slate-400 text-xs sm:text-sm tracking-wide uppercase">
+                <tr className="bg-gray-50/50 border-b border-gray-200 text-gray-500 text-xs sm:text-sm tracking-wide uppercase">
                   <th className="px-4 sm:px-6 py-4 font-semibold">User</th>
                   <th className="px-4 sm:px-6 py-4 font-semibold hidden md:table-cell">Platform</th>
                   <th className="px-4 sm:px-6 py-4 font-semibold">Messages</th>
@@ -115,25 +115,25 @@ const ConversationsList = () => {
                     <tr 
                       key={conv._id} 
                       onClick={() => handleRowClick(conv._id)}
-                      className="hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                      className="hover:bg-gray-100 transition-colors cursor-pointer group"
                     >
                       <td className="px-4 sm:px-6 py-4">
                         <div className="flex items-center gap-3 sm:gap-4">
-                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold text-sm sm:text-base shrink-0">
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center text-black font-semibold text-sm sm:text-base shrink-0">
                             {initial}
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="font-medium text-slate-200 truncate">
+                            <span className="font-medium text-gray-900 truncate">
                               {displayName}
                             </span>
-                            <span className="text-xs text-slate-500 sm:hidden mt-0.5 truncate">
+                            <span className="text-xs text-black0 sm:hidden mt-0.5 truncate">
                               {formatLastActive(conv.lastMessageAt)}
                             </span>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800/50 text-slate-300 capitalize border border-slate-700/50">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700 capitalize border border-gray-300/50">
                           {conv.platform}
                         </span>
                       </td>
@@ -143,11 +143,11 @@ const ConversationsList = () => {
                           {conv.messageCount}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4 text-slate-400 text-sm hidden sm:table-cell">
+                      <td className="px-4 sm:px-6 py-4 text-gray-500 text-sm hidden sm:table-cell">
                         {formatLastActive(conv.lastMessageAt)}
                       </td>
                       <td className="px-4 sm:px-6 py-4 text-right">
-                        <button className="p-2 -mr-2 rounded-lg text-slate-500 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center">
+                        <button className="p-2 -mr-2 rounded-lg text-black0 group-hover:text-black group-hover:bg-gray-100 transition-colors inline-flex items-center justify-center">
                           <ExternalLink size={18} />
                         </button>
                       </td>
@@ -161,27 +161,27 @@ const ConversationsList = () => {
 
         {/* Pagination Controls */}
         {!loading && conversations.length > 0 && (
-          <div className="px-4 sm:px-6 py-4 border-t border-slate-800/60 bg-slate-950/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-sm text-slate-400">
-              Showing <span className="font-medium text-slate-200">{(currentPage - 1) * limit + 1}</span> to{' '}
-              <span className="font-medium text-slate-200">{Math.min(currentPage * limit, totalCount)}</span> of{' '}
-              <span className="font-medium text-slate-200">{totalCount}</span> results
+          <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span className="text-sm text-gray-500">
+              Showing <span className="font-medium text-gray-900">{(currentPage - 1) * limit + 1}</span> to{' '}
+              <span className="font-medium text-gray-900">{Math.min(currentPage * limit, totalCount)}</span> of{' '}
+              <span className="font-medium text-gray-900">{totalCount}</span> results
             </span>
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
+                className="px-3 py-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
               >
                 <ChevronLeft size={16} /> Prev
               </button>
-              <div className="px-2 text-sm font-medium text-slate-500">
-                <span className="text-slate-200">{currentPage}</span> / {totalPages}
+              <div className="px-2 text-sm font-medium text-black0">
+                <span className="text-gray-900">{currentPage}</span> / {totalPages}
               </div>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
+                className="px-3 py-1.5 rounded-md text-gray-500 hover:text-black hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
               >
                 Next <ChevronRight size={16} />
               </button>
@@ -194,3 +194,4 @@ const ConversationsList = () => {
 };
 
 export default ConversationsList;
+

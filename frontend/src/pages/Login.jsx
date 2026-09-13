@@ -63,31 +63,31 @@ const Login = () => {
   if (isAuthenticated) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 flex font-sans">
+    <div className="min-h-screen bg-gray-50 flex font-sans">
       
       {/* Left Side: Branding / Hero */}
-      <div className="hidden lg:flex flex-1 relative bg-slate-900 border-r border-slate-800 flex-col justify-between overflow-hidden">
+      <div className="hidden lg:flex flex-1 relative bg-white border-r border-gray-200 flex-col justify-between overflow-hidden">
         {/* Abstract Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[120px] rounded-full" />
+          <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-gray-200 blur-[120px] rounded-full" />
           <div className="absolute top-[40%] -right-[20%] w-[60%] h-[60%] bg-blue-500/10 blur-[100px] rounded-full" />
         </div>
 
         <div className="relative z-10 p-12">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+            <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
               <Bot size={24} />
             </div>
-            <span className="text-xl font-bold text-slate-50 tracking-tight">Mayank AI</span>
+            <span className="text-xl font-bold text-black tracking-tight">Mayank AI</span>
           </div>
         </div>
 
         <div className="relative z-10 p-12 max-w-2xl">
-          <h1 className="text-4xl xl:text-5xl font-bold text-slate-50 tracking-tight leading-tight mb-6">
+          <h1 className="text-4xl xl:text-5xl font-bold text-black tracking-tight leading-tight mb-6">
             Intelligent conversations, <br/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-400">automated perfectly.</span>
           </h1>
-          <p className="text-slate-400 text-lg leading-relaxed">
+          <p className="text-gray-500 text-lg leading-relaxed">
             Manage your AI-powered Instagram responses, track daily engagement trends, and oversee all conversations from one unified command center.
           </p>
         </div>
@@ -98,16 +98,16 @@ const Login = () => {
         
         {/* Mobile branding header */}
         <div className="lg:hidden flex items-center gap-3 mb-12">
-          <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+          <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
             <Bot size={24} />
           </div>
-          <span className="text-2xl font-bold text-slate-50 tracking-tight">Mayank AI</span>
+          <span className="text-2xl font-bold text-black tracking-tight">Mayank AI</span>
         </div>
 
-        <div className="w-full max-w-[420px] bg-slate-900 lg:bg-transparent border border-slate-800 lg:border-none p-8 lg:p-0 rounded-2xl shadow-xl lg:shadow-none">
+        <div className="w-full max-w-[420px] bg-white lg:bg-transparent border border-gray-200 lg:border-none p-8 lg:p-0 rounded-2xl shadow-xl lg:shadow-none">
           <div className="mb-8 text-center lg:text-left">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-50 tracking-tight mb-2">Welcome back</h2>
-            <p className="text-slate-400 text-sm sm:text-base">Enter your credentials to access the dashboard</p>
+            <h2 className="text-2xl sm:text-3xl font-bold text-black tracking-tight mb-2">Welcome back</h2>
+            <p className="text-gray-500 text-sm sm:text-base">Enter your credentials to access the dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
@@ -120,11 +120,11 @@ const Login = () => {
             )}
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-300">
+              <label className="block text-sm font-medium text-gray-700">
                 Email Address
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-black0 group-focus-within:text-black transition-colors">
                   <Mail size={18} />
                 </div>
                 <input
@@ -136,10 +136,10 @@ const Login = () => {
                   }}
                   disabled={loading}
                   className={cn(
-                    "w-full bg-slate-950 border rounded-xl pl-10 pr-4 py-3 text-slate-50 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
+                    "w-full bg-gray-50 border rounded-xl pl-10 pr-4 py-3 text-black placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
                     emailError 
                       ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" 
-                      : "border-slate-800 focus:ring-indigo-500/20 focus:border-indigo-500"
+                      : "border-gray-200 focus:ring-black/20 focus:border-black"
                   )}
                   placeholder="admin@example.com"
                 />
@@ -148,11 +148,11 @@ const Login = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-slate-300">
+              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 group-focus-within:text-indigo-400 transition-colors">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-black0 group-focus-within:text-black transition-colors">
                   <Lock size={18} />
                 </div>
                 <input
@@ -164,10 +164,10 @@ const Login = () => {
                   }}
                   disabled={loading}
                   className={cn(
-                    "w-full bg-slate-950 border rounded-xl pl-10 pr-4 py-3 text-slate-50 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
+                    "w-full bg-gray-50 border rounded-xl pl-10 pr-4 py-3 text-black placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
                     passwordError 
                       ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" 
-                      : "border-slate-800 focus:ring-indigo-500/20 focus:border-indigo-500"
+                      : "border-gray-200 focus:ring-black/20 focus:border-black"
                   )}
                   placeholder="••••••••"
                 />
@@ -178,7 +178,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 mt-6 active:scale-[0.98]"
+              className="w-full bg-black hover:bg-black text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 hover:shadow-indigo-500/30 mt-6 active:scale-[0.98]"
             >
               {loading ? (
                 <>
@@ -197,3 +197,4 @@ const Login = () => {
 };
 
 export default Login;
+

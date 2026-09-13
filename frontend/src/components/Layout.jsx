@@ -22,10 +22,10 @@ const Layout = ({ children }) => {
   const SidebarContent = () => (
     <>
       <div className="p-6 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-black shrink-0">
           <Bot size={20} />
         </div>
-        <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent truncate">
+        <h1 className="text-lg font-bold bg-gradient-to-r from-gray-500 to-black bg-clip-text text-transparent truncate">
           Mayank AI
         </h1>
       </div>
@@ -41,26 +41,26 @@ const Layout = ({ children }) => {
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
                 isActive
-                  ? "bg-indigo-500/10 text-indigo-400 font-medium"
-                  : "text-slate-400 hover:text-slate-50 hover:bg-slate-800/50"
+                  ? "bg-gray-100 text-black font-medium"
+                  : "text-gray-500 hover:text-black hover:bg-gray-100"
               )}
             >
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-500 rounded-r-full" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-black rounded-r-full" />
               )}
-              <Icon size={20} className={cn("shrink-0", isActive ? "text-indigo-400" : "text-slate-500 group-hover:text-slate-300 transition-colors")} />
+              <Icon size={20} className={cn("shrink-0", isActive ? "text-black" : "text-black0 group-hover:text-gray-700 transition-colors")} />
               <span>{item.name}</span>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-800/50 mt-auto">
+      <div className="p-4 border-t border-gray-200 mt-auto">
         <button
           onClick={logout}
-          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors group"
+          className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors group"
         >
-          <LogOut size={20} className="shrink-0 text-slate-500 group-hover:text-red-400 transition-colors" />
+          <LogOut size={20} className="shrink-0 text-black0 group-hover:text-red-400 transition-colors" />
           <span className="font-medium">Sign Out</span>
         </button>
       </div>
@@ -68,26 +68,26 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-50 overflow-hidden font-sans">
+    <div className="flex h-screen bg-gray-50 text-black overflow-hidden font-sans">
       
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 bg-slate-950 border-r border-slate-800/50 flex-col relative z-20">
+      <aside className="hidden lg:flex w-64 bg-gray-50 border-r border-gray-200 flex-col relative z-20">
         <SidebarContent />
       </aside>
 
       {/* Mobile Top Bar */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/50 z-30 flex items-center justify-between px-4">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-gray-50/80 backdrop-blur-md border-b border-gray-200 z-30 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-black shrink-0">
             <Bot size={20} />
           </div>
-          <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">
+          <span className="text-lg font-bold bg-gradient-to-r from-gray-500 to-black bg-clip-text text-transparent">
             Mayank AI
           </span>
         </div>
         <button 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 -mr-2 text-slate-400 hover:text-slate-50 transition-colors rounded-lg hover:bg-slate-800/50"
+          className="p-2 -mr-2 text-gray-500 hover:text-black transition-colors rounded-lg hover:bg-gray-100"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -95,9 +95,9 @@ const Layout = ({ children }) => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-20 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}>
+        <div className="lg:hidden fixed inset-0 z-20 bg-gray-50/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}>
           <aside 
-            className="w-64 h-full bg-slate-950 border-r border-slate-800/50 flex flex-col pt-16 shadow-2xl" 
+            className="w-64 h-full bg-gray-50 border-r border-gray-200 flex flex-col pt-16 shadow-2xl" 
             onClick={(e) => e.stopPropagation()}
           >
             <SidebarContent />
@@ -116,3 +116,4 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
+

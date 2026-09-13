@@ -128,10 +128,10 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full">
           
           {/* AI Toggle Control */}
-          <div className="flex items-center justify-between sm:justify-start gap-4 bg-slate-900 border border-slate-800/60 p-2 sm:pr-4 rounded-xl shadow-sm">
+          <div className="flex items-center justify-between sm:justify-start gap-4 bg-white border border-gray-200 p-2 sm:pr-4 rounded-xl shadow-sm">
             <div className="flex items-center gap-3 px-2 sm:px-3">
               <div className={cn("w-2 h-2 rounded-full", aiEnabled ? "bg-emerald-500 animate-pulse" : "bg-slate-500")} />
-              <span className="text-sm font-medium text-slate-200">
+              <span className="text-sm font-medium text-gray-900">
                 AI Auto-Reply
               </span>
             </div>
@@ -141,7 +141,7 @@ const Dashboard = () => {
                 onClick={handleToggleAi}
                 disabled={togglingAi}
                 className={cn(
-                  "relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50",
+                  "relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-black/40 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50",
                   aiEnabled ? 'bg-emerald-500' : 'bg-slate-700'
                 )}
               >
@@ -164,14 +164,14 @@ const Dashboard = () => {
           </div>
 
           {/* Period Selector */}
-          <div className="flex bg-slate-900 border border-slate-800/60 rounded-xl p-1 shadow-sm w-full sm:w-auto">
+          <div className="flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm w-full sm:w-auto">
             <button
               onClick={() => setPeriod(7)}
               className={cn(
                 "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200",
                 period === 7 
-                  ? "bg-slate-800 text-slate-50 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  ? "bg-gray-100 text-black shadow-sm" 
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
               )}
             >
               7 Days
@@ -181,8 +181,8 @@ const Dashboard = () => {
               className={cn(
                 "flex-1 sm:flex-none px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200",
                 period === 30 
-                  ? "bg-slate-800 text-slate-50 shadow-sm" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  ? "bg-gray-100 text-black shadow-sm" 
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
               )}
             >
               30 Days
@@ -212,8 +212,8 @@ const Dashboard = () => {
           title="AI Replies"
           value={stats?.aiReplies?.toLocaleString() || 0}
           icon={Bot}
-          colorClass="text-indigo-400"
-          bgClass="bg-indigo-500/10"
+          colorClass="text-black"
+          bgClass="bg-gray-100"
           loading={loadingStats}
         />
         <StatCard
@@ -243,10 +243,10 @@ const Dashboard = () => {
       </div>
 
       {/* Chart Section */}
-      <div className="bg-slate-900 border border-slate-800/60 rounded-2xl p-4 sm:p-6 shadow-sm">
+      <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-6 px-2 sm:px-0">
-          <Activity className="text-indigo-400" size={20} />
-          <h2 className="text-lg font-semibold text-slate-50 tracking-tight">Message Activity</h2>
+          <Activity className="text-black" size={20} />
+          <h2 className="text-lg font-semibold text-black tracking-tight">Message Activity</h2>
         </div>
         
         <div className="h-[300px] sm:h-[400px] w-full">
@@ -259,16 +259,16 @@ const Dashboard = () => {
                 <XAxis 
                   dataKey="date" 
                   tickFormatter={formatChartDate}
-                  stroke="#475569"
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
+                  stroke="#e5e7eb"
+                  tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 500 }}
                   axisLine={false}
                   tickLine={false}
                   dy={15}
                   minTickGap={30}
                 />
                 <YAxis 
-                  stroke="#475569"
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
+                  stroke="#e5e7eb"
+                  tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 500 }}
                   axisLine={false}
                   tickLine={false}
                   dx={-10}
@@ -276,13 +276,13 @@ const Dashboard = () => {
                 <Tooltip
                   cursor={{ stroke: '#334155', strokeWidth: 1, strokeDasharray: '4 4' }}
                   contentStyle={{ 
-                    backgroundColor: '#0f172a', 
-                    border: '1px solid #1e293b', 
+                    backgroundColor: '#ffffff', 
+                    border: '1px solid #e5e7eb', 
                     borderRadius: '12px',
                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
                   }}
-                  itemStyle={{ color: '#f8fafc', fontWeight: 500 }}
-                  labelStyle={{ color: '#94a3b8', marginBottom: '8px', fontSize: '13px' }}
+                  itemStyle={{ color: '#000000', fontWeight: 500 }}
+                  labelStyle={{ color: '#6b7280', marginBottom: '8px', fontSize: '13px' }}
                   labelFormatter={formatChartDate}
                 />
                 <Legend 
@@ -293,24 +293,24 @@ const Dashboard = () => {
                   type="monotone" 
                   name="User Messages"
                   dataKey="userMessages" 
-                  stroke="#3b82f6" 
+                  stroke="#9ca3af" 
                   strokeWidth={3}
-                  dot={{ fill: '#0f172a', stroke: '#3b82f6', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, strokeWidth: 0, fill: '#3b82f6' }}
+                  dot={{ fill: '#ffffff', stroke: '#9ca3af', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, strokeWidth: 0, fill: '#9ca3af' }}
                 />
                 <Line 
                   type="monotone" 
                   name="AI Replies"
                   dataKey="assistantMessages" 
-                  stroke="#8b5cf6" 
+                  stroke="#000000" 
                   strokeWidth={3}
-                  dot={{ fill: '#0f172a', stroke: '#8b5cf6', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, strokeWidth: 0, fill: '#8b5cf6' }}
+                  dot={{ fill: '#ffffff', stroke: '#000000', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, strokeWidth: 0, fill: '#000000' }}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-slate-500 bg-slate-950/50 rounded-xl border border-slate-800/50 border-dashed">
+            <div className="w-full h-full flex items-center justify-center text-black0 bg-gray-50/50 rounded-xl border border-gray-200 border-dashed">
               No activity data available for this period.
             </div>
           )}
@@ -321,3 +321,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
