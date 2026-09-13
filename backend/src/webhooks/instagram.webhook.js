@@ -1,10 +1,30 @@
 import { ENV } from "../config/env.js";
 import { geminiIntegration } from "../integrations/gemini/index.js";
+import { conversationMemoryService } from "../services/conversationMemory.service.js";
 
 async function processInstagramMessage(senderId, messageText) {
   try {
+    let history = [];
+    
+    // 1. Fetch conversation history
+    try {
+      history = await conversationMemoryService.getConversationHistory(senderId);
+      console.log(`[AI Engine] Fetched ${history.length} previous messages for context.`);
+    } catch (dbError) {
+      console.error("[AI Engine] Failed to fetch conversation history, falling back to empty context:", dbError);
+    }
+
+    // 2. Record the incoming user message
+    try {
+      await conversationMemoryService.recordUserMessage(senderId, messageText);
+    } catch (dbError) {
+      console.error("[AI Engine] Failed to record user message in DB:", dbError);
+    }
+
     console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
-    const replyText = await geminiIntegration.generateAIReply(messageText);
+    
+    // 3. Generate AI Reply using the fetched history
+    const replyText = await geminiIntegration.generateAIReply(messageText, history);
     console.log(`[AI Engine] Generated reply: "${replyText}"`);
 
     console.log(`[AI Engine] Sending reply to Instagram for user: ${senderId}`);
@@ -31,6 +51,13 @@ async function processInstagramMessage(senderId, messageText) {
       console.error("[AI Engine] Failed to send message via Meta Graph API:", errorData);
     } else {
       console.log("[AI Engine] Reply sent successfully!");
+      
+      // 4. Record the outgoing assistant message (only if sent successfully)
+      try {
+        await conversationMemoryService.recordAssistantMessage(senderId, replyText);
+      } catch (dbError) {
+        console.error("[AI Engine] Failed to record assistant message in DB:", dbError);
+      }
     }
   } catch (error) {
     console.error("[AI Engine] Error processing message asynchronously:", error);
