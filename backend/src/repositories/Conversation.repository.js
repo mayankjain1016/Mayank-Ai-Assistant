@@ -6,8 +6,10 @@ class ConversationRepository {
     return await Conversation.findOne({ instagramUserId });
   }
 
-  async createConversation(instagramUserId, platform = "instagram") {
-    return await Conversation.create({ instagramUserId, platform });
+  async createConversation(instagramUserId, platform = "instagram", username = null) {
+    const data = { instagramUserId, platform };
+    if (username) data.username = username;
+    return await Conversation.create(data);
   }
 
   async findOrCreateByInstagramUserId(instagramUserId) {

@@ -8,6 +8,9 @@ const conversationSchema = new Schema(
       index: true,
       unique: true, // compound/unique index so each user maps to exactly one Conversation
     },
+    username: {
+      type: String,
+    },
     platform: {
       type: String,
       default: "instagram",
