@@ -9,7 +9,7 @@ class GeminiIntegration {
     }
     this.genAI = new GoogleGenerativeAI(ENV.GEMINI_API_KEY);
     // Use a fast and cost-effective model
-    this.model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    this.model = this.genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
   }
 
   /**
