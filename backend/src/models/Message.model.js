@@ -17,6 +17,11 @@ const messageSchema = new Schema(
       type: String,
       required: [true, "Content is required"],
     },
+    language: {
+      type: String,
+      enum: ["hindi", "english", "hinglish", "unknown"],
+      default: "unknown",
+    }
   },
   {
     timestamps: true, // Automatically manages createdAt

@@ -2,10 +2,12 @@ import { ENV } from "../config/env.js";
 import { geminiIntegration } from "../integrations/gemini/index.js";
 import { conversationMemoryService } from "../services/conversationMemory.service.js";
 import { settingsService } from "../services/settings.service.js";
+import { errorLogService } from "../services/errorLog.service.js";
 
 async function processInstagramMessage(senderId, messageText, skipAI = false) {
   try {
     let replyText = "";
+    let language = "unknown";
     
     if (skipAI) {
       console.log(`[AI Engine] Skipping AI generation, using hardcoded reply.`);
@@ -45,8 +47,10 @@ async function processInstagramMessage(senderId, messageText, skipAI = false) {
       console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
       
       // 3. Generate AI Reply using the fetched history
-      replyText = await geminiIntegration.generateAIReply(messageText, history);
-      console.log(`[AI Engine] Generated reply: "${replyText}"`);
+      const result = await geminiIntegration.generateAIReply(messageText, history);
+      replyText = result.replyText;
+      language = result.language;
+      console.log(`[AI Engine] Generated reply: "${replyText}" (Language: ${language})`);
     }
 
     console.log(`[AI Engine] Sending reply to Instagram for user: ${senderId}`);
@@ -71,18 +75,24 @@ async function processInstagramMessage(senderId, messageText, skipAI = false) {
     if (!response.ok) {
       const errorData = await response.json();
       console.error("[AI Engine] Failed to send message via Meta Graph API:", errorData);
+      
+      await errorLogService.logError("instagram_send", "Failed to send message via Meta Graph API", {
+        recipientId: senderId,
+        errorData
+      });
     } else {
       console.log("[AI Engine] Reply sent successfully!");
       
       // 4. Record the outgoing assistant message
       try {
-        await conversationMemoryService.recordAssistantMessage(senderId, replyText);
+        await conversationMemoryService.recordAssistantMessage(senderId, replyText, language);
       } catch (dbError) {
         console.error("[AI Engine] Failed to record assistant message in DB:", dbError);
       }
     }
   } catch (error) {
     console.error("[AI Engine] Error processing message asynchronously:", error);
+    await errorLogService.logError("webhook", error.message || String(error), { senderId });
   }
 }
 

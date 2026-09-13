@@ -31,10 +31,11 @@ class ConversationMemoryService {
   /**
    * Records an outgoing assistant response and updates the lastMessageAt timestamp.
    */
-  async recordAssistantMessage(instagramUserId, content) {
+  async recordAssistantMessage(instagramUserId, content, language = "unknown") {
     const conversation = await conversationRepository.findOrCreateByInstagramUserId(instagramUserId);
-    await messageRepository.createMessage(conversation._id, "assistant", content);
+    const message = await messageRepository.createMessage(conversation._id, "assistant", content, language);
     await conversationRepository.updateLastMessageAt(conversation._id);
+    return message;
   }
 }
 

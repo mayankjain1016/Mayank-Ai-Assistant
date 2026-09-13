@@ -4,6 +4,7 @@ import authRoutes from "./auth.routes.js";
 import webhookRoutes from "./webhook.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 import settingsRoutes from "./settings.routes.js";
+import analyticsRoutes from "./analytics.routes.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { STATUS_CODES } from "../config/constants.js";
 
@@ -22,5 +23,6 @@ router.use("/api/v1/auth", authRoutes);
 router.use("/api/v1/webhooks", webhookRoutes);
 router.use("/api/v1/dashboard", dashboardRoutes);
 router.use("/api/v1/settings", settingsRoutes);
+router.use("/api/v1/analytics", analyticsRoutes);
 
 export default router;
