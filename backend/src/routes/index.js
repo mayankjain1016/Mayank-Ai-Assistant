@@ -2,6 +2,8 @@ import { Router } from "express";
 import healthRoutes from "./health.routes.js";
 import authRoutes from "./auth.routes.js";
 import webhookRoutes from "./webhook.routes.js";
+import dashboardRoutes from "./dashboard.routes.js";
+import settingsRoutes from "./settings.routes.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { STATUS_CODES } from "../config/constants.js";
 
@@ -18,5 +20,7 @@ router.get("/", (req, res) => {
 router.use("/api/health", healthRoutes);
 router.use("/api/v1/auth", authRoutes);
 router.use("/api/v1/webhooks", webhookRoutes);
+router.use("/api/v1/dashboard", dashboardRoutes);
+router.use("/api/v1/settings", settingsRoutes);
 
 export default router;

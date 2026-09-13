@@ -1,6 +1,7 @@
 import { ENV } from "../config/env.js";
 import { geminiIntegration } from "../integrations/gemini/index.js";
 import { conversationMemoryService } from "../services/conversationMemory.service.js";
+import { settingsService } from "../services/settings.service.js";
 
 async function processInstagramMessage(senderId, messageText, skipAI = false) {
   try {
@@ -25,6 +26,20 @@ async function processInstagramMessage(senderId, messageText, skipAI = false) {
         await conversationMemoryService.recordUserMessage(senderId, messageText);
       } catch (dbError) {
         console.error("[AI Engine] Failed to record user message in DB:", dbError);
+      }
+
+      // Check if AI auto-reply is currently enabled
+      let aiStatus;
+      try {
+        aiStatus = await settingsService.getAiToggleStatus();
+      } catch (dbError) {
+        console.error("[AI Engine] Failed to fetch AI toggle status, defaulting to enabled.", dbError);
+        aiStatus = { aiEnabled: true };
+      }
+
+      if (!aiStatus.aiEnabled) {
+        console.log(`[AI Engine] AI auto-reply is globally DISABLED. Skipping auto-reply for user: ${senderId}.`);
+        return; // We still recorded the user's message above!
       }
 
       console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
