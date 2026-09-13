@@ -19,7 +19,7 @@ export const applySecurityMiddleware = (app) => {
   // Enable CORS
   app.use(
     cors({
-      origin: ENV.CLIENT_URL,
+      origin: ENV.ALLOWED_ORIGINS,
       credentials: true,
     })
   );

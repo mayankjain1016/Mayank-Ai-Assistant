@@ -6,7 +6,9 @@ dotenv.config();
 export const ENV = {
   PORT: process.env.PORT || 5000,
   NODE_ENV: process.env.NODE_ENV || "development",
-  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:3000",
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(",") 
+    : ["http://localhost:3000", "https://frontend-two-delta-dye3c3xusl.vercel.app"],
   MONGODB_URI: process.env.MONGODB_URI || "",
   DATABASE_NAME: process.env.DATABASE_NAME || "mayank_ai_assistant",
   
