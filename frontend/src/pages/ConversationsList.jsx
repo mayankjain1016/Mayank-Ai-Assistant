@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { ChevronLeft, ChevronRight, MessageSquare, ExternalLink, Inbox } from 'lucide-react';
-import { PageHeader } from '../components/ui/PageHeader';
 import { Skeleton } from '../components/ui/Skeleton';
 import { cn } from '../lib/utils';
 
@@ -30,7 +28,7 @@ const ConversationsList = () => {
         setTotalPages(data.totalPages || 1);
       } catch (err) {
         console.error('Failed to load conversations:', err);
-        setError('Failed to load conversations. Please try again.');
+        setError('Failed to load conversations.');
       } finally {
         setLoading(false);
       }
@@ -61,95 +59,73 @@ const ConversationsList = () => {
   };
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-500 pb-12">
-      <PageHeader 
-        title="Conversations" 
-        description="View and manage interactions with your Instagram users."
-      />
+    <div className="space-y-12 animate-in fade-in duration-700 pb-12">
+      <div className="flex justify-between items-end">
+        <h1 className="text-4xl font-serif text-stone-100 tracking-tight">Conversations</h1>
+        {!loading && (
+          <span className="text-stone-500 uppercase tracking-widest text-xs">
+            {totalCount} Total
+          </span>
+        )}
+      </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm">
+        <div className="text-clay-500 py-2 border-b border-clay-500/30">
           {error}
         </div>
       )}
 
-      <div className="bg-slate-900 border border-slate-800/60 rounded-2xl overflow-hidden shadow-sm flex flex-col min-h-[500px]">
+      <div>
         {loading ? (
-          <div className="flex-1 p-6 space-y-4">
+          <div className="space-y-6">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-4 py-3">
-                <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-                <Skeleton className="h-5 w-48" />
-                <Skeleton className="h-5 w-24 ml-auto hidden sm:block" />
+              <div key={i} className="flex items-center gap-4 pb-6 border-b border-stone-800">
+                <Skeleton className="h-5 w-48 bg-stone-800/50" />
+                <Skeleton className="h-5 w-24 ml-auto bg-stone-800/50" />
               </div>
             ))}
           </div>
         ) : conversations.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center py-20 px-4 text-center">
-            <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-500 mb-6">
-              <Inbox size={32} />
-            </div>
-            <h3 className="text-xl font-semibold text-slate-200 mb-2">No conversations yet</h3>
-            <p className="text-slate-400 max-w-sm">
-              When users interact with your AI Assistant on Instagram, their conversations will appear here.
-            </p>
+          <div className="py-20 text-stone-500 font-serif italic text-lg border-t border-stone-800">
+            No conversations recorded yet.
           </div>
         ) : (
-          <div className="flex-1 overflow-x-auto">
-            <table className="w-full text-left border-collapse whitespace-nowrap">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left whitespace-nowrap">
               <thead>
-                <tr className="bg-slate-950/50 border-b border-slate-800/60 text-slate-400 text-xs sm:text-sm tracking-wide uppercase">
-                  <th className="px-4 sm:px-6 py-4 font-semibold">User</th>
-                  <th className="px-4 sm:px-6 py-4 font-semibold hidden md:table-cell">Platform</th>
-                  <th className="px-4 sm:px-6 py-4 font-semibold">Messages</th>
-                  <th className="px-4 sm:px-6 py-4 font-semibold hidden sm:table-cell">Last Active</th>
-                  <th className="px-4 sm:px-6 py-4 font-semibold text-right">Action</th>
+                <tr className="border-b border-stone-800 text-stone-500 uppercase tracking-widest text-xs">
+                  <th className="pb-4 font-normal">Contact</th>
+                  <th className="pb-4 font-normal hidden md:table-cell">Platform</th>
+                  <th className="pb-4 font-normal text-right">Messages</th>
+                  <th className="pb-4 font-normal text-right hidden sm:table-cell">Last Active</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50">
+              <tbody className="divide-y divide-stone-800/50">
                 {conversations.map((conv) => {
                   const displayName = conv.username || conv.instagramUserId;
-                  const initial = displayName?.charAt(0).toUpperCase() || '?';
                   
                   return (
                     <tr 
                       key={conv._id} 
                       onClick={() => handleRowClick(conv._id)}
-                      className="hover:bg-slate-800/40 transition-colors cursor-pointer group"
+                      className="hover:bg-stone-800/20 transition-colors cursor-pointer group"
                     >
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center gap-3 sm:gap-4">
-                          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-semibold text-sm sm:text-base shrink-0">
-                            {initial}
-                          </div>
-                          <div className="flex flex-col min-w-0">
-                            <span className="font-medium text-slate-200 truncate">
-                              {displayName}
-                            </span>
-                            <span className="text-xs text-slate-500 sm:hidden mt-0.5 truncate">
-                              {formatLastActive(conv.lastMessageAt)}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800/50 text-slate-300 capitalize border border-slate-700/50">
-                          {conv.platform}
+                      <td className="py-5 pr-6">
+                        <span className="font-serif text-stone-100 text-lg group-hover:text-clay-500 transition-colors">
+                          {displayName}
+                        </span>
+                        <span className="block text-xs text-stone-500 sm:hidden mt-1">
+                          {formatLastActive(conv.lastMessageAt)}
                         </span>
                       </td>
-                      <td className="px-4 sm:px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                          <MessageSquare size={12} className="mr-1.5" />
-                          {conv.messageCount}
-                        </span>
+                      <td className="py-5 pr-6 hidden md:table-cell text-stone-400 capitalize">
+                        {conv.platform}
                       </td>
-                      <td className="px-4 sm:px-6 py-4 text-slate-400 text-sm hidden sm:table-cell">
+                      <td className="py-5 pr-6 text-right font-serif text-lg text-stone-300">
+                        {conv.messageCount}
+                      </td>
+                      <td className="py-5 text-right text-stone-500 hidden sm:table-cell">
                         {formatLastActive(conv.lastMessageAt)}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-right">
-                        <button className="p-2 -mr-2 rounded-lg text-slate-500 group-hover:text-indigo-400 group-hover:bg-indigo-500/10 transition-colors inline-flex items-center justify-center">
-                          <ExternalLink size={18} />
-                        </button>
                       </td>
                     </tr>
                   );
@@ -159,33 +135,26 @@ const ConversationsList = () => {
           </div>
         )}
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         {!loading && conversations.length > 0 && (
-          <div className="px-4 sm:px-6 py-4 border-t border-slate-800/60 bg-slate-950/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-sm text-slate-400">
-              Showing <span className="font-medium text-slate-200">{(currentPage - 1) * limit + 1}</span> to{' '}
-              <span className="font-medium text-slate-200">{Math.min(currentPage * limit, totalCount)}</span> of{' '}
-              <span className="font-medium text-slate-200">{totalCount}</span> results
-            </span>
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg p-1">
-              <button
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
-              >
-                <ChevronLeft size={16} /> Prev
-              </button>
-              <div className="px-2 text-sm font-medium text-slate-500">
-                <span className="text-slate-200">{currentPage}</span> / {totalPages}
-              </div>
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-md text-slate-400 hover:text-slate-50 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm font-medium"
-              >
-                Next <ChevronRight size={16} />
-              </button>
+          <div className="mt-8 flex justify-between items-center text-sm uppercase tracking-widest text-xs font-medium border-t border-stone-800 pt-6">
+            <button
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="text-stone-500 hover:text-stone-100 disabled:opacity-30 transition-colors"
+            >
+              Previous
+            </button>
+            <div className="text-stone-500">
+              <span className="text-stone-200">{currentPage}</span> / {totalPages}
             </div>
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="text-stone-500 hover:text-stone-100 disabled:opacity-30 transition-colors"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>
