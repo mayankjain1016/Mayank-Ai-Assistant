@@ -104,10 +104,10 @@ const ConversationsList = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-medium">
-                          {conv.instagramUserId?.charAt(0).toUpperCase() || '?'}
+                          {(conv.username || conv.instagramUserId)?.charAt(0).toUpperCase() || '?'}
                         </div>
                         <span className="font-medium text-slate-200">
-                          {conv.instagramUserId}
+                          {conv.username || conv.instagramUserId}
                         </span>
                       </div>
                     </td>

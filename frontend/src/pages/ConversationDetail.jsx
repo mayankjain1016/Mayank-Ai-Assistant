@@ -75,7 +75,7 @@ const ConversationDetail = () => {
         </button>
         <div>
           <h1 className="text-2xl font-bold text-slate-50 flex items-center gap-3">
-            {conversation?.instagramUserId}
+            {conversation?.username || conversation?.instagramUserId}
             <span className="text-xs font-medium px-2 py-1 bg-slate-800 text-slate-300 rounded-md capitalize">
               {conversation?.platform}
             </span>
