@@ -1,7 +1,7 @@
 import { analyticsService } from "../services/analytics.service.js";
 import { errorLogService } from "../services/errorLog.service.js";
 import { dashboardStatsService } from "../services/dashboardStats.service.js";
-import asyncHandler from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 
