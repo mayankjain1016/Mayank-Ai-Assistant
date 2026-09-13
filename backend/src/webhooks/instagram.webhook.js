@@ -2,30 +2,37 @@ import { ENV } from "../config/env.js";
 import { geminiIntegration } from "../integrations/gemini/index.js";
 import { conversationMemoryService } from "../services/conversationMemory.service.js";
 
-async function processInstagramMessage(senderId, messageText) {
+async function processInstagramMessage(senderId, messageText, skipAI = false) {
   try {
-    let history = [];
+    let replyText = "";
     
-    // 1. Fetch conversation history
-    try {
-      history = await conversationMemoryService.getConversationHistory(senderId);
-      console.log(`[AI Engine] Fetched ${history.length} previous messages for context.`);
-    } catch (dbError) {
-      console.error("[AI Engine] Failed to fetch conversation history, falling back to empty context:", dbError);
-    }
+    if (skipAI) {
+      console.log(`[AI Engine] Skipping AI generation, using hardcoded reply.`);
+      replyText = messageText;
+    } else {
+      let history = [];
+      
+      // 1. Fetch conversation history
+      try {
+        history = await conversationMemoryService.getConversationHistory(senderId);
+        console.log(`[AI Engine] Fetched ${history.length} previous messages for context.`);
+      } catch (dbError) {
+        console.error("[AI Engine] Failed to fetch conversation history, falling back to empty context:", dbError);
+      }
 
-    // 2. Record the incoming user message
-    try {
-      await conversationMemoryService.recordUserMessage(senderId, messageText);
-    } catch (dbError) {
-      console.error("[AI Engine] Failed to record user message in DB:", dbError);
-    }
+      // 2. Record the incoming user message
+      try {
+        await conversationMemoryService.recordUserMessage(senderId, messageText);
+      } catch (dbError) {
+        console.error("[AI Engine] Failed to record user message in DB:", dbError);
+      }
 
-    console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
-    
-    // 3. Generate AI Reply using the fetched history
-    const replyText = await geminiIntegration.generateAIReply(messageText, history);
-    console.log(`[AI Engine] Generated reply: "${replyText}"`);
+      console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
+      
+      // 3. Generate AI Reply using the fetched history
+      replyText = await geminiIntegration.generateAIReply(messageText, history);
+      console.log(`[AI Engine] Generated reply: "${replyText}"`);
+    }
 
     console.log(`[AI Engine] Sending reply to Instagram for user: ${senderId}`);
     
@@ -52,7 +59,7 @@ async function processInstagramMessage(senderId, messageText) {
     } else {
       console.log("[AI Engine] Reply sent successfully!");
       
-      // 4. Record the outgoing assistant message (only if sent successfully)
+      // 4. Record the outgoing assistant message
       try {
         await conversationMemoryService.recordAssistantMessage(senderId, replyText);
       } catch (dbError) {
@@ -91,14 +98,20 @@ export const handleInstagramWebhook = async (req, res) => {
           const senderId = webhookEvent.sender?.id;
           const message = webhookEvent.message;
 
-          // Check if it's a standard text message (not an echo, not a reaction)
-          if (senderId && message && message.text && !message.is_echo) {
-            console.log(`\n[Webhook] Received text message from ${senderId}: ${message.text}`);
-            
-            // Fire and forget asynchronous processing - DO NOT await here so Meta gets a 200 OK fast
-            processInstagramMessage(senderId, message.text);
-          } else {
-            console.log(`[Webhook] Ignored non-text or echo message`);
+          if (senderId && message && !message.is_echo) {
+            // Log FULL raw message for debugging image attachments
+            console.log(`\n[Webhook] RAW MESSAGE OBJECT:`, JSON.stringify(message, null, 2));
+
+            if (message.attachments && message.attachments.length > 0) {
+              console.log(`[Webhook] Message contains attachments. Sending generic fallback.`);
+              const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
+              processInstagramMessage(senderId, fallbackReply, true);
+            } else if (message.text) {
+              console.log(`[Webhook] Received text message from ${senderId}: ${message.text}`);
+              processInstagramMessage(senderId, message.text, false);
+            } else {
+              console.log(`[Webhook] Ignored non-text message without attachments.`);
+            }
           }
         });
       });
