@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { settingsController } from "../controllers/settings.controller.js";
-import { verifyJWT } from "../middleware/auth.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
 // Protected by admin auth middleware
-router.use(verifyJWT);
+router.use(authenticate);
 
 router.route("/ai-toggle")
   .get(settingsController.getAiToggle)
