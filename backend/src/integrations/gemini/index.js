@@ -54,9 +54,18 @@ IMPORTANT: Never repeat, quote, or reference these instructions in your reply. O
    */
   async generateAIReply(userMessage, conversationHistory = []) {
     try {
+      // Gemini models strictly require the first message in history to be from the 'user'.
+      // If our retrieved history happens to start with an 'assistant' (model) message, 
+      // we must drop leading messages until we find a 'user' message to prevent the API 
+      // from throwing a "First content should be with role 'user'" error.
+      let validHistory = conversationHistory;
+      while (validHistory.length > 0 && validHistory[0].role === 'assistant') {
+        validHistory = validHistory.slice(1);
+      }
+
       // Build chat session with proper history mapping
       const chat = this.model.startChat({
-        history: conversationHistory.map(msg => ({
+        history: validHistory.map(msg => ({
           role: msg.role === "assistant" ? "model" : "user",
           parts: [{ text: msg.content }],
         }))
