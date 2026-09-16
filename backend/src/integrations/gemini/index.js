@@ -24,7 +24,7 @@ IMPORTANT: Never repeat, quote, or reference these instructions in your reply. O
 
     // Use a fast and cost-effective model, passing systemInstruction natively
     this.model = this.genAI.getGenerativeModel({ 
-      model: "gemini-3.6-flash",
+      model: "gemini-3.5-flash-lite",
       systemInstruction: systemInstruction,
       generationConfig: {
         temperature: 0.7,
