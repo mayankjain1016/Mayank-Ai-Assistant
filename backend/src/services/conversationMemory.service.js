@@ -45,7 +45,7 @@ class ConversationMemoryService {
    */
   async recordUserMessage(instagramUserId, content) {
     const conversation = await this._ensureConversation(instagramUserId);
-    await messageRepository.createMessage(conversation._id, "user", content);
+    await messageRepository.createMessage(conversation._id, "user", content, "unknown", "user");
     await conversationRepository.updateLastMessageAt(conversation._id);
   }
 
@@ -54,7 +54,17 @@ class ConversationMemoryService {
    */
   async recordAssistantMessage(instagramUserId, content, language = "unknown") {
     const conversation = await this._ensureConversation(instagramUserId);
-    const message = await messageRepository.createMessage(conversation._id, "assistant", content, language);
+    const message = await messageRepository.createMessage(conversation._id, "assistant", content, language, "ai");
+    await conversationRepository.updateLastMessageAt(conversation._id);
+    return message;
+  }
+
+  /**
+   * Records a manual reply sent by a human (echo) and updates the lastMessageAt timestamp.
+   */
+  async recordManualMessage(instagramUserId, content) {
+    const conversation = await this._ensureConversation(instagramUserId);
+    const message = await messageRepository.createMessage(conversation._id, "assistant", content, "unknown", "human");
     await conversationRepository.updateLastMessageAt(conversation._id);
     return message;
   }

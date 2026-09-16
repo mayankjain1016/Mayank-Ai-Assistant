@@ -121,28 +121,42 @@ export const handleInstagramWebhook = async (req, res) => {
         
         webhookEvents.forEach(webhookEvent => {
           const senderId = webhookEvent.sender?.id;
+          const recipientId = webhookEvent.recipient?.id;
           const message = webhookEvent.message;
 
-          if (senderId && message && !message.is_echo) {
+          if (message) {
             // Log FULL raw message for debugging image attachments
             console.log(`\n[Webhook] RAW MESSAGE OBJECT:`, JSON.stringify(message, null, 2));
 
-            if (message.attachments && message.attachments.length > 0) {
-              console.log(`[Webhook] Message contains attachments. Sending generic fallback.`);
-              const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
-              processInstagramMessage(senderId, fallbackReply, true);
-            } else if (message.text) {
-              const trimmedText = message.text.trim();
-              if (trimmedText.length === 0) {
-                console.log(`[Webhook] Message text is empty or whitespace only. Sending generic fallback.`);
-                const fallbackReply = "I only understand text! Could you type that out for me? ✨";
-                processInstagramMessage(senderId, fallbackReply, true);
-              } else {
-                console.log(`[Webhook] Received text message from ${senderId}: ${trimmedText}`);
-                processInstagramMessage(senderId, trimmedText, false);
+            if (message.is_echo) {
+              const targetUserId = recipientId;
+              if (message.text) {
+                const trimmedText = message.text.trim();
+                if (trimmedText.length > 0) {
+                  console.log(`[Webhook] Received ECHO (manual human reply) sent to ${targetUserId}: ${trimmedText}`);
+                  conversationMemoryService.recordManualMessage(targetUserId, trimmedText).catch(err => {
+                    console.error("[Webhook] Failed to record manual echo message:", err);
+                  });
+                }
               }
-            } else {
-              console.log(`[Webhook] Ignored non-text message without attachments.`);
+            } else if (senderId) {
+              if (message.attachments && message.attachments.length > 0) {
+                console.log(`[Webhook] Message contains attachments. Sending generic fallback.`);
+                const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
+                processInstagramMessage(senderId, fallbackReply, true);
+              } else if (message.text) {
+                const trimmedText = message.text.trim();
+                if (trimmedText.length === 0) {
+                  console.log(`[Webhook] Message text is empty or whitespace only. Sending generic fallback.`);
+                  const fallbackReply = "I only understand text! Could you type that out for me? ✨";
+                  processInstagramMessage(senderId, fallbackReply, true);
+                } else {
+                  console.log(`[Webhook] Received text message from ${senderId}: ${trimmedText}`);
+                  processInstagramMessage(senderId, trimmedText, false);
+                }
+              } else {
+                console.log(`[Webhook] Ignored non-text message without attachments.`);
+              }
             }
           }
         });

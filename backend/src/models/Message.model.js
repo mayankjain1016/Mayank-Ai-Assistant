@@ -21,6 +21,11 @@ const messageSchema = new Schema(
       type: String,
       enum: ["hindi", "english", "hinglish", "unknown"],
       default: "unknown",
+    },
+    sentBy: {
+      type: String,
+      enum: ["user", "ai", "human"],
+      default: "user"
     }
   },
   {

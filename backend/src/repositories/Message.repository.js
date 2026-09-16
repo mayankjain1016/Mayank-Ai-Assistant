@@ -1,8 +1,8 @@
 import { Message } from "../models/Message.model.js";
 
 class MessageRepository {
-  async createMessage(conversationId, role, content, language = "unknown") {
-    return await Message.create({ conversationId, role, content, language });
+  async createMessage(conversationId, role, content, language = "unknown", sentBy = "user") {
+    return await Message.create({ conversationId, role, content, language, sentBy });
   }
 
   async getRecentMessages(conversationId, limit = 20) {
