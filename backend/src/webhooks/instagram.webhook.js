@@ -132,8 +132,15 @@ export const handleInstagramWebhook = async (req, res) => {
               const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
               processInstagramMessage(senderId, fallbackReply, true);
             } else if (message.text) {
-              console.log(`[Webhook] Received text message from ${senderId}: ${message.text}`);
-              processInstagramMessage(senderId, message.text, false);
+              const trimmedText = message.text.trim();
+              if (trimmedText.length === 0) {
+                console.log(`[Webhook] Message text is empty or whitespace only. Sending generic fallback.`);
+                const fallbackReply = "I only understand text! Could you type that out for me? ✨";
+                processInstagramMessage(senderId, fallbackReply, true);
+              } else {
+                console.log(`[Webhook] Received text message from ${senderId}: ${trimmedText}`);
+                processInstagramMessage(senderId, trimmedText, false);
+              }
             } else {
               console.log(`[Webhook] Ignored non-text message without attachments.`);
             }

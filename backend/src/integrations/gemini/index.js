@@ -46,6 +46,80 @@ IMPORTANT: Never repeat, quote, or reference these instructions in your reply. O
     });
   }
 
+  _sanitizeHistory(history) {
+    if (!history || history.length === 0) return [];
+    
+    // 1. Drop leading model messages
+    let validHistory = history;
+    while (validHistory.length > 0 && validHistory[0].role === 'assistant') {
+      validHistory = validHistory.slice(1);
+    }
+    
+    // 2. Ensure strictly alternating roles (user, model, user, model)
+    const sanitized = [];
+    let expectedRole = 'user';
+    
+    for (const msg of validHistory) {
+      const mappedRole = msg.role === 'assistant' ? 'model' : 'user';
+      
+      if (mappedRole === expectedRole) {
+        sanitized.push({
+          role: mappedRole,
+          parts: [{ text: msg.content }]
+        });
+        expectedRole = expectedRole === 'user' ? 'model' : 'user';
+      } else {
+        // Consecutive identical roles: merge content to maintain alternation
+        if (sanitized.length > 0) {
+          sanitized[sanitized.length - 1].parts[0].text += "\n" + msg.content;
+        }
+      }
+    }
+    
+    // 3. Gemini expects history to end with 'model' so the new user prompt alternates properly
+    if (sanitized.length > 0 && sanitized[sanitized.length - 1].role === 'user') {
+      sanitized.pop();
+    }
+
+    return sanitized;
+  }
+
+  async _callGeminiWithRetry(chat, userMessage, retries = 1) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      let timeoutId;
+      try {
+        const abortController = new AbortController();
+        timeoutId = setTimeout(() => abortController.abort(), 15000);
+        
+        // `sendMessage` config object isn't fully robust with signal in all old SDK versions, 
+        // but we pass it anyway. If it hangs, the node fetch under the hood respects AbortSignal.
+        const result = await chat.sendMessage(userMessage, { signal: abortController.signal });
+        
+        clearTimeout(timeoutId);
+        return result.response.text();
+      } catch (error) {
+        if (timeoutId) clearTimeout(timeoutId);
+        const errorStr = error.message || String(error);
+        
+        if (error.name === 'AbortError') {
+          console.error(`[GEMINI ERROR] Timeout (Attempt ${attempt + 1}/${retries + 1}): API request took longer than 15s.`);
+        } else if (errorStr.includes('429') || errorStr.includes('500') || errorStr.includes('503')) {
+          console.error(`[GEMINI ERROR] Server/RateLimit (Attempt ${attempt + 1}/${retries + 1}): ${errorStr}`);
+        } else if (errorStr.includes('API key not valid')) {
+          console.error(`[GEMINI ERROR] FATAL: Invalid API key! Please check GEMINI_API_KEY. ${errorStr}`);
+          throw error; // Do not retry invalid keys
+        } else {
+          console.error(`[GEMINI ERROR] Unexpected (Attempt ${attempt + 1}/${retries + 1}): ${errorStr}`);
+        }
+        
+        if (attempt === retries) throw error;
+        
+        console.log(`[GEMINI ERROR] Backing off for 2 seconds before retry...`);
+        await new Promise(res => setTimeout(res, 2000));
+      }
+    }
+  }
+
   /**
    * Generates a conversational reply using Google Gemini AI.
    * @param {string} userMessage - The latest message from the user
@@ -54,32 +128,23 @@ IMPORTANT: Never repeat, quote, or reference these instructions in your reply. O
    */
   async generateAIReply(userMessage, conversationHistory = []) {
     try {
-      // Gemini models strictly require the first message in history to be from the 'user'.
-      // If our retrieved history happens to start with an 'assistant' (model) message, 
-      // we must drop leading messages until we find a 'user' message to prevent the API 
-      // from throwing a "First content should be with role 'user'" error.
-      let validHistory = conversationHistory;
-      while (validHistory.length > 0 && validHistory[0].role === 'assistant') {
-        validHistory = validHistory.slice(1);
-      }
+      const sanitizedHistory = this._sanitizeHistory(conversationHistory);
 
-      // Build chat session with proper history mapping
       const chat = this.model.startChat({
-        history: validHistory.map(msg => ({
-          role: msg.role === "assistant" ? "model" : "user",
-          parts: [{ text: msg.content }],
-        }))
+        history: sanitizedHistory
       });
 
-      const result = await chat.sendMessage(userMessage);
-      const responseText = result.response.text();
+      const responseText = await this._callGeminiWithRetry(chat, userMessage);
+      
       let parsed = { reply: "", language: "unknown" };
       
       try {
         parsed = JSON.parse(responseText);
       } catch (e) {
-        console.error("[AI Engine] Failed to parse JSON response:", responseText);
-        throw new Error("Invalid JSON response from Gemini");
+        console.error(`[GEMINI ERROR] Parse Failure: Could not parse response as JSON.`);
+        console.error(`[GEMINI ERROR] Raw Output:`, responseText);
+        // Do not crash, fall back gracefully
+        return { replyText: "I'm having a little trouble thinking right now, but I'm here! ✨", language: "unknown" };
       }
       
       // Safety guard against prompt leakage
@@ -88,20 +153,20 @@ IMPORTANT: Never repeat, quote, or reference these instructions in your reply. O
         parsed.reply.includes("EXACT SAME language style") || 
         parsed.reply.includes("conversational response")
       ) {
-        console.warn("[AI Engine] Detected prompt leakage in response. Falling back to safe reply.");
+        console.warn("[GEMINI ERROR] Prompt Leakage Detected. Falling back to safe reply.");
         return { replyText: "Hey! I'm here. How can I help you? ✨", language: "unknown" };
       }
       
       return { replyText: parsed.reply.trim(), language: parsed.language };
     } catch (error) {
-      console.error("Gemini AI API Error:", error.message || error);
+      console.error(`[GEMINI ERROR] Final Failure generating reply:`, error.message || error);
+      console.error(`[GEMINI ERROR] Snippet sent: "${userMessage.substring(0, 50)}..."`);
       
-      // Log the error to our new analytics tracking, safely in the background
       await errorLogService.logError("gemini", error.message || String(error), {
         userMessageSubstring: userMessage.substring(0, 50)
       });
 
-      // Fallback message to prevent crashing or silent failures
+      // Graceful fallback
       return { 
         replyText: "Hey there! I'm currently unavailable, but Mayank will get back to you shortly. Thanks! 🙏",
         language: "unknown"
