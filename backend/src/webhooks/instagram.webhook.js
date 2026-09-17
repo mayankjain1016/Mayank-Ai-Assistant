@@ -4,7 +4,7 @@ import { conversationMemoryService } from "../services/conversationMemory.servic
 import { settingsService } from "../services/settings.service.js";
 import { errorLogService } from "../services/errorLog.service.js";
 
-async function processInstagramMessage(senderId, messageText, skipAI = false) {
+async function processInstagramMessage(senderId, messageText, skipAI = false, base64Image = null) {
   try {
     let replyText = "";
     let language = "unknown";
@@ -25,7 +25,9 @@ async function processInstagramMessage(senderId, messageText, skipAI = false) {
 
       // 2. Record the incoming user message
       try {
-        await conversationMemoryService.recordUserMessage(senderId, messageText);
+        // Even if messageText is empty (e.g. just an image), we log it as an image message
+        const textToRecord = messageText || "[Image sent]";
+        await conversationMemoryService.recordUserMessage(senderId, textToRecord);
       } catch (dbError) {
         console.error("[AI Engine] Failed to record user message in DB:", dbError);
       }
@@ -44,10 +46,10 @@ async function processInstagramMessage(senderId, messageText, skipAI = false) {
         return; // We still recorded the user's message above!
       }
 
-      console.log(`[AI Engine] Generating reply for message: "${messageText}"`);
+      console.log(`[AI Engine] Generating reply for message: "${messageText}" (Image attached: ${!!base64Image})`);
       
-      // 3. Generate AI Reply using the fetched history
-      const result = await geminiIntegration.generateAIReply(messageText, history);
+      // 3. Generate AI Reply using the fetched history and potential image
+      const result = await geminiIntegration.generateAIReply(messageText, history, base64Image);
       replyText = result.replyText;
       language = result.language;
       console.log(`[AI Engine] Generated reply: "${replyText}" (Language: ${language})`);
@@ -141,9 +143,36 @@ export const handleInstagramWebhook = async (req, res) => {
               }
             } else if (senderId) {
               if (message.attachments && message.attachments.length > 0) {
-                console.log(`[Webhook] Message contains attachments. Sending generic fallback.`);
-                const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
-                processInstagramMessage(senderId, fallbackReply, true);
+                const imageAttachment = message.attachments.find(a => a.type === "image");
+                const shareAttachment = message.attachments.find(a => a.type === "share" || a.type === "video");
+                const text = message.text ? message.text.trim() : "";
+
+                if (imageAttachment && imageAttachment.payload && imageAttachment.payload.url) {
+                  console.log(`[Webhook] Downloading image attachment from URL...`);
+                  fetch(imageAttachment.payload.url)
+                    .then(res => {
+                      if (!res.ok) throw new Error(`Failed to fetch image: ${res.statusText}`);
+                      return res.arrayBuffer();
+                    })
+                    .then(buffer => {
+                      const base64Image = Buffer.from(buffer).toString("base64");
+                      console.log(`[Webhook] Image downloaded successfully. Sending to Gemini.`);
+                      processInstagramMessage(senderId, text, false, base64Image);
+                    })
+                    .catch(err => {
+                      console.error("[GEMINI ERROR] Vision image download failed:", err);
+                      const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
+                      processInstagramMessage(senderId, fallbackReply, true);
+                    });
+                } else if (shareAttachment) {
+                  console.log(`[Webhook] Message contains a share/reel/video link.`);
+                  const fallbackReply = "I can't watch reels or videos just yet! What's it about? 🙈";
+                  processInstagramMessage(senderId, fallbackReply, true);
+                } else {
+                  console.log(`[Webhook] Message contains unsupported attachment. Sending generic fallback.`);
+                  const fallbackReply = "Nice pic! I'll get back to you on that soon ✨";
+                  processInstagramMessage(senderId, fallbackReply, true);
+                }
               } else if (message.text) {
                 const trimmedText = message.text.trim();
                 if (trimmedText.length === 0) {
